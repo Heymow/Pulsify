@@ -18,13 +18,18 @@ router.post('/search', async (req, res) => {
     if (fetchAllKeywords.length) {
         const prompts = []
 
-        for (const populatePrompts of fetchAllKeywords) {
-            const populatedPrompts = await populatePrompts.populate('prompts')
-            for (const userIdInPrompt of populatedPrompts.prompts) {
-                const userIdInPromptPopulated = await userIdInPrompt.populate('userId')
-                userIdInPromptPopulated.isPublic && prompts.push(userIdInPromptPopulated)
+        for (const keyword of fetchAllKeywords) {
+            const populatedPrompts = await keyword.populate('prompts')
+            for (const prompt of populatedPrompts.prompts) {
+                if (prompt.isPublic) {
+                    const promptWithUserId = await prompt.populate('userId')
+                    prompts.push(promptWithUserId)
+                }
+
             }
+
         }
+
         if (prompts.length) {
             res.json({ result: true, keywordsList: prompts })
         } else {

@@ -1,11 +1,11 @@
-import styles from "../styles/Accueil.module.css"
 import { useEffect, useState } from 'react';
-import Link from "next/link";
 import { useRouter } from "next/router";
-import Header from "../components/Header";
-import ModelCard from "../components/ModelCard";
 import { useSelector } from "react-redux";
 
+import styles from "../styles/Accueil.module.css"
+import Link from "next/link";
+import Header from "../components/Header";
+import ModelCard from "../components/ModelCard";
 
 function Accueil() {
 
@@ -21,6 +21,7 @@ function Accueil() {
     const user = useSelector((state => state.user.value));
 
 
+    // Si pas d'utilisateur connectés, navigue vers la page Welcome/tutorial
     !user.token && router.push({ pathname: '/' });
 
     const handleClick = (genre, isCommunity) => {
@@ -34,7 +35,7 @@ function Accueil() {
     const fetchProjects = async () => {
         // Fetch des projets 
         const { email, token } = user;
-        const fetchProject = await fetch('http://localhost:3000/genres/searchMyGenres', {
+        const fetchProject = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/genres/searchMyGenres`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ search, email, token }),
@@ -47,7 +48,7 @@ function Accueil() {
     const fetchCommunityProjects = async () => {
         // Fetch des projets 
         const { email, token } = user;
-        const fetchProject = await fetch('http://localhost:3000/genres/searchLikedGenres', {
+        const fetchProject = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/genres/searchLikedGenres`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ search: searchCommunity, email, token }),
@@ -70,7 +71,7 @@ function Accueil() {
     // Fonction pour supprimer un genre et tous les mots-clés associés.
     const handleRemoveGenre = async (genre) => {
         const { email, token } = user;
-        const removedGenre = await fetch('http://localhost:3000/genres/removeGenre', {
+        const removedGenre = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/genres/removeGenre`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ genre, email, token }),
@@ -79,7 +80,7 @@ function Accueil() {
         fetchCommunityProjects();
     }
 
-
+    // Premier display avec lien Suno et direction vers nouveau projet (newProject(false))
     let display =
         <div className={styles.container}>
             <div className={styles.choiceContainer}>
@@ -111,11 +112,13 @@ function Accueil() {
             </>
     }
 
-
+    // si l'itulisateur click sur "utiliser un genre".
     if (newExistingProject) {
         let mappedProjects;
+        // L'utilisateur est sur le tab "Mes genres".
         if (selectedTab === 1) {
             const myProjects = listProjects;
+            // Display si l'utilisateur utilise l'input de recherche.
             if (listProjects.length && search.length) {
                 mappedProjects = listProjects.map((project, i) => {
                     const { genre, userId, titles } = project;
@@ -135,6 +138,7 @@ function Accueil() {
                     </div>
                 });
             } else {
+                //Display des genres créés par l'utilisteur
                 mappedProjects = myProjects.map((project, i) => {
                     const { genre, userId, titles } = project;
                     return (
@@ -156,8 +160,10 @@ function Accueil() {
                 });
             }
 
+            // L'utilisateur est sur le tab "Communauté".
         } else if (selectedTab === 2) {
             const myProjects = listCommunityProject;
+            // Utilise l'input de recherche
             if (listProjects.length && search.length) {
                 mappedProjects = listCommunityProject.map((project, i) => {
 
@@ -176,6 +182,7 @@ function Accueil() {
                     </div>
                 });
             } else {
+                // Tous les genres de la communauté sont affichés par défaut.
                 mappedProjects = myProjects.map((project, i) => {
 
                     let { genre, userId, titles } = project;

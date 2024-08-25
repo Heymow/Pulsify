@@ -41,7 +41,7 @@ function Login() {
   />
 
   const connexionGoogle = async (emailGoogle, firstname, username, picture, googleId) => {
-    const fetchLogin = await fetch('http://localhost:3000/users/signup/google', {
+    const fetchLogin = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/users/signup/google`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: emailGoogle, username: username, firstname: firstname, google_id: googleId, picture: picture }),
@@ -56,7 +56,7 @@ function Login() {
   }
 
   const connexion = async () => {
-    const fetchLogin = await fetch('http://localhost:3000/users/signin', {
+    const fetchLogin = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/users/signin`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: email, password: password }),

@@ -14,7 +14,7 @@ function SignalementModal(props) {
   const handleValidation = async () => {
     if (props.id) {
       try {
-        const signalement = await fetch(`http://localhost:3000/projects/signalementProject`, {
+        const signalement = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/projects/signalementProject`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ function SignalementModal(props) {
 
     if (props.comment) {
       try {
-        const signalement = await fetch(`http://localhost:3000/projects/signalementComment`, {
+        const signalement = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/projects/signalementComment`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

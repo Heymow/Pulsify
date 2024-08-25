@@ -26,6 +26,8 @@ function Explorer() {
     const [allGenres, setAllGenres] = useState([]);
     const [discover, setDiscover] = useState(false);
     const [reRender, setReRender] = useState(false);
+    const [debounceTimer, setDebounceTimer] = useState(0);
+    const [abortController, setAbortController] = useState(null)
 
     const dispatch = useDispatch();
     const router = useRouter()
@@ -44,7 +46,7 @@ function Explorer() {
     // Récupération de toutes les genres 
     const foundAllGenres = async () => {
         const { token, email } = user;
-        const foundGenres = await fetch('http://localhost:3000/genres/allGenres', {
+        const foundGenres = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/genres/allGenres`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ token, email }),
@@ -60,7 +62,7 @@ function Explorer() {
 
     const getAllLikedPosts = async () => {
         const { email, token } = user;
-        fetch('http://localhost:3000/users/likedPosts', {
+        fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/users/likedPosts`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, token })
@@ -143,33 +145,35 @@ function Explorer() {
     let colorUp = sortUp ? '#504E6B' : undefined
     let colorDown = sortDown ? '#504E6B' : undefined
 
-    // Fonction qui permet d'appeler les fonctions de Fetch en fonction du filtre sur la page 
+    const handleSearch = () => {
+        if (checkedAutor) {
+            fetchAutor()
+        } else if (checkedProject) {
+            fetchProject()
+        } else if (checkedGenre) {
+            fetchGenre()
+        } else if (checkedKeyword) {
+            fetchKeyword()
+        }
+    }
+
+
+    // Instauration d'un debounce dans la fonction search.
     const fetchSearch = () => {
         setDiscover(false)
         setSortUp(false)
         setSortDown(false)
-        if (checkedAutor) {
-            fetchAutor()
-            return
-        }
-        if (checkedProject) {
-            fetchProject()
-            return
-        }
-        if (checkedGenre) {
-            fetchGenre()
-            return
-        }
-        if (checkedKeyword) {
-            fetchKeyword()
-            return
-        }
+        clearTimeout(debounceTimer)
+        let timer = setTimeout(() => {
+            handleSearch()
+        }, 2000);
+        setDebounceTimer(timer)
     }
 
     // Récupération des auteurs 
     const fetchAutor = async () => {
         const { email, token } = user;
-        const fetchAutor = await fetch('http://localhost:3000/users/search', {
+        const fetchAutor = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/users/search`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: search, token, email }),
@@ -186,26 +190,38 @@ function Explorer() {
 
     // Récupération des mots clés
     const fetchKeyword = async () => {
-        const { email, token } = user;
-        const fetchKeyWord = await fetch('http://localhost:3000/keywords/search', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ keyword: search, email, token }),
-        })
-        const res = await fetchKeyWord.json()
-        if (res.result) {
-            setListProject(res.keywordsList)
-            setErrorSearch(false)
-        } else {
-            setErrorSearch(true)
-            setErrorMessage(res.error)
+        if (abortController) {
+            abortController.abort()
         }
+        const newAbortController = new AbortController()
+        setAbortController(newAbortController);
+        try {
+            const { email, token } = user;
+            const fetchKeyWord = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/keywords/search`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ keyword: search, email, token }),
+                signal: newAbortController.signal,
+            })
+            const res = await fetchKeyWord.json()
+            if (res.result) {
+                setListProject(res.keywordsList)
+                setErrorSearch(false)
+            } else {
+                setErrorSearch(true)
+                setErrorMessage(res.error)
+            }
+        }
+        catch (error) {
+            console.log('error :', error)
+        }
+
     }
 
     // Récupération des projets 
     const fetchProject = async () => {
         const { email, token } = user;
-        const fetchProject = await fetch('http://localhost:3000/projects/searchTitle', {
+        const fetchProject = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/projects/searchTitle`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ title: search, email, token }),
@@ -220,6 +236,8 @@ function Explorer() {
         }
     }
 
+
+
     // Récupération des projets soit pour la recherche soit pour l'affichage des suggestions
     const fetchGenre = async (genre) => {
         setDiscover(false)
@@ -227,7 +245,7 @@ function Explorer() {
         if (genre) {
             // Récupération des projets pour la suggestion de recherche 
             setSearch(genre)
-            const fetchProject = await fetch('http://localhost:3000/genres/searchGenre', {
+            const fetchProject = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/genres/searchGenre`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ genre, email, token }),
@@ -242,7 +260,7 @@ function Explorer() {
             }
         } else {
             // Récupération des projets pour la recherche
-            const fetchProject = await fetch('http://localhost:3000/genres/searchGenre', {
+            const fetchProject = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/genres/searchGenre`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ genre: search, email, token }),
@@ -260,7 +278,7 @@ function Explorer() {
 
     useEffect(() => {
         getAllLikedPosts();
-    }, [search, reRender])
+    }, [])
 
     const refresh = () => {
         setReRender(!reRender);
@@ -279,6 +297,8 @@ function Explorer() {
     // Affichage du message d'erreur en fonction de la recherche, s'adapte à ce qui est retourné par la route
     let error = errorSearch && <h4 style={{ color: 'red', fontWeight: 'normal', fontStyle: 'italic', display: 'flex', justifyContent: 'center' }}>{errorMessage}</h4>
 
+
+
     return (
         <>
             <Header></Header>
@@ -288,7 +308,10 @@ function Explorer() {
 
 
                 <div className={styles.containerSearch}>
-                    <input type='string' placeholder={placeHolder} onChange={(e) => { setSearch(e.target.value); setErrorSearch(false); setListProject([]); }} value={search} className={styles.inputSearch} />
+                    <input type='string' placeholder={placeHolder}
+                        onChange={(e) => { setSearch(e.target.value); setErrorSearch(false); setListProject([]); }}
+                        value={search} className={styles.inputSearch} />
+
                     <div className={styles.containerIcon}>
                         <Popover
                             isOpen={isPopoverOpen}

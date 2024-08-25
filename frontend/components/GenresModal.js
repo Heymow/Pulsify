@@ -18,7 +18,7 @@ function GenresModal(props) {
     const fetchAllGenres = async () => {
         const { token, email } = user
         if (token) {
-            const fetchGenres = await fetch('http://localhost:3000/genres/searchMyGenres', {
+            const fetchGenres = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/genres/searchMyGenres`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token, email }),
@@ -31,7 +31,7 @@ function GenresModal(props) {
     // Fetch les genres de l'utilisateur et ceux qu'il a liké
     const fetchLikedGenres = async () => {
         const { token, email } = user
-        const fetchLikedGenres = await fetch('http://localhost:3000/genres/searchLikedGenres', {
+        const fetchLikedGenres = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/genres/searchLikedGenres`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ token, email, getLikedGenres: true }),

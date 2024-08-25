@@ -30,7 +30,7 @@ function Profil() {
 
   const getAllLikedPosts = () => {
     const { email, token } = user;
-    fetch('http://localhost:3000/users/likedPosts', {
+    fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/users/likedPosts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, token })
@@ -54,7 +54,7 @@ function Profil() {
 
   const clickBibliotheque = () => {
     if (user.token) {
-      fetch('http://localhost:3000/users/projets', {
+      fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/users/projets`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: user.email, token: user.token })
@@ -109,7 +109,6 @@ function Profil() {
   }).reverse()
 
   const communityMap = communityList.map((data, i) => {
-    console.log('data.id :', data._id)
     return (
       <div className={styles.promptCard}>
         <PromptCard

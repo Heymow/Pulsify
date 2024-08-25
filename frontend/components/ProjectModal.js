@@ -31,7 +31,7 @@ function ProjectModal(props) {
                 title: props.projectTitle,
             };
             // Envoyer les data du prompt sans l'audio
-            const saveDataForPrompt = await fetch("http://localhost:3000/projects/add", {
+            const saveDataForPrompt = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/projects/add`, {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dataForPrompt),
@@ -49,7 +49,7 @@ function ProjectModal(props) {
                     formData.append('audio', file[0]);
 
                     // Envoyer l'audio au backend au format formData
-                    const audioResponse = await fetch(`http://localhost:3000/projects/${responseDataPrompt.prompt._id}/upload-audio`, {
+                    const audioResponse = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/projects/${responseDataPrompt.prompt._id}/upload-audio`, {
                         method: "POST",
                         body: formData,
                     });

@@ -210,7 +210,6 @@ router.post('/genres', async (req, res) => {
 
 
 router.post("/like", async (req, res) => {
-  console.log('req.body.id :', req.body.id)
   // Vérifier que les champs sont tous fournis
   if (!checkBody(req.body, ['token', 'email', 'id'])) {
     res.json({ result: false, error: 'Access denied.' });

@@ -53,7 +53,7 @@ function Project() {
     const suggestions = [];
     const fetchSuggestions = async () => {
         const { token, email } = user;
-        const fetchSuggestions = await fetch('http://localhost:3000/keywords/suggestions',
+        const fetchSuggestions = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/keywords/suggestions`,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -118,7 +118,7 @@ function Project() {
     // Appeler la route de recherche sur Spotify
     const fetchGenreArtistOnSpotify = async (search) => {
         const { token, email } = user;
-        const fetchArtist = await fetch('http://localhost:3000/spotify', {
+        const fetchArtist = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/spotify`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ search, token, email }),

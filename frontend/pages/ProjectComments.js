@@ -36,15 +36,13 @@ function ProjectComments() {
     // Appel la route qui enregistre le commentaire en sous document dans le projet
     const postComment = async () => {
         const { email, token } = user;
-        const postCommentInBD = await fetch('http://localhost:3000/projects/comment', {
+        const postCommentInBD = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/projects/comment`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id, comment, email, token }),
         })
         const res = await postCommentInBD.json()
-        console.log('res :', res)
         if (res.result) {
-            console.log('comment :', comment)
             setCommentsList([...commentsList, res.newComment])
             fetchProjectData(id)
             setComment('')
@@ -57,7 +55,6 @@ function ProjectComments() {
     useEffect(() => {
         if (id) {
             fetchProjectData(id)
-            console.log('Project ID:', id);
         }
     }, [id]);
 
@@ -65,7 +62,7 @@ function ProjectComments() {
     // Fonction qui appelle la route qui récupère les commentaires du projet
     const fetchProjectData = async (id) => {
         const { email, token } = user;
-        const fetchData = await fetch(`http://localhost:3000/projects/ProjectById`, {
+        const fetchData = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/projects/ProjectById`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id, email, token }),

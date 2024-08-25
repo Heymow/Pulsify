@@ -345,7 +345,6 @@ router.post('/comment', async (req, res) => {
 // Supprimer un commentaire et les signalements attribués
 router.delete('/comment', async (req, res) => {
     const { projectId, comment, userId } = req.body;
-    console.log('projectId, commentId, userId', projectId, comment, userId)
     const project = await Project.findByIdAndUpdate(
         projectId,
         { $pull: { messages: { comment: comment, userId: userId } } },

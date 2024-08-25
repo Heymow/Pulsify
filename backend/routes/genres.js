@@ -28,6 +28,7 @@ router.post("/searchMyGenres", async (req, res) => {
     }
 
     // Récupération des projets correspondant à l'utilisateur et au critère de recherche
+    // TODO, ask about spread operator "...(formattedSearch &&"
     let projects = await Project.find({
         userId: foundUser._id,
         ...(formattedSearch && {

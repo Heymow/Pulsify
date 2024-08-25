@@ -24,7 +24,7 @@ function MessageCard(props) {
 
     // Fonction qui permet d'effacer un commentaire de la base de donnée
     const removeComment = async () => {
-        const response = await fetch('http://localhost:3000/projects/comment', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URL}/projects/comment`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

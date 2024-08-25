@@ -1,7 +1,8 @@
 import styles from '../styles/Welcome.module.css';
-import { useState } from 'react'
-import Header from './Header';
 import ArrowDiagram from './ArrowDiagram';
+import Header from './Header';
+
+import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
