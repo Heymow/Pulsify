@@ -9,6 +9,8 @@ import { useRouter } from 'next/router';
 
 function Login() {
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorLogin, setErrorLogin] = useState(false);
@@ -41,7 +43,7 @@ function Login() {
   />
 
   const connexionGoogle = async (emailGoogle, firstname, username, picture, googleId) => {
-    const fetchLogin = await fetch('http://localhost:3000/users/signup/google', {
+    const fetchLogin = await fetch(`${siteUrl}/users/signup/google`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: emailGoogle, username: username, firstname: firstname, google_id: googleId, picture: picture }),
@@ -56,7 +58,7 @@ function Login() {
   }
 
   const connexion = async () => {
-    const fetchLogin = await fetch('http://localhost:3000/users/signin', {
+    const fetchLogin = await fetch(`${siteUrl}/users/signin`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: email, password: password }),

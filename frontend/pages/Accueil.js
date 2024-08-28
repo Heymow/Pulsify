@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 
 
 function Accueil() {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
     const [newProject, setNewProject] = useState(false);
     const [newExistingProject, setNewExistingProject] = useState(false);
@@ -34,7 +35,7 @@ function Accueil() {
     const fetchProjects = async () => {
         // Fetch des projets 
         const { email, token } = user;
-        const fetchProject = await fetch('http://localhost:3000/genres/searchMyGenres', {
+        const fetchProject = await fetch(`${siteUrl}/genres/searchMyGenres`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ search, email, token }),
@@ -47,7 +48,7 @@ function Accueil() {
     const fetchCommunityProjects = async () => {
         // Fetch des projets 
         const { email, token } = user;
-        const fetchProject = await fetch('http://localhost:3000/genres/searchLikedGenres', {
+        const fetchProject = await fetch(`${siteUrl}/genres/searchLikedGenres`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ search: searchCommunity, email, token }),
@@ -70,7 +71,7 @@ function Accueil() {
     // Fonction pour supprimer un genre et tous les mots-clés associés.
     const handleRemoveGenre = async (genre) => {
         const { email, token } = user;
-        const removedGenre = await fetch('http://localhost:3000/genres/removeGenre', {
+        const removedGenre = await fetch(`${siteUrl}/genres/removeGenre`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ genre, email, token }),

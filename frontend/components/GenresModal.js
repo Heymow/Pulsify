@@ -5,6 +5,8 @@ import { useState } from 'react';
 import { useSelector } from "react-redux";
 
 function GenresModal(props) {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
     const user = useSelector((state) => state.user.value)
     const [genresList, setGenresList] = useState([])
     const [includeCommunityFavorites, setIncludeCommunityFavorites] = useState(false);
@@ -18,7 +20,7 @@ function GenresModal(props) {
     const fetchAllGenres = async () => {
         const { token, email } = user
         if (token) {
-            const fetchGenres = await fetch('http://localhost:3000/genres/searchMyGenres', {
+            const fetchGenres = await fetch(`${siteUrl}/genres/searchMyGenres`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token, email }),
@@ -31,7 +33,7 @@ function GenresModal(props) {
     // Fetch les genres de l'utilisateur et ceux qu'il a liké
     const fetchLikedGenres = async () => {
         const { token, email } = user
-        const fetchLikedGenres = await fetch('http://localhost:3000/genres/searchLikedGenres', {
+        const fetchLikedGenres = await fetch(`${siteUrl}/genres/searchLikedGenres`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ token, email, getLikedGenres: true }),

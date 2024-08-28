@@ -7,6 +7,8 @@ import { useSelector } from 'react-redux';
 import { useRouter } from "next/router";
 
 function ProjectComments() {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
     const user = useSelector((state) => state.user.value)
     const [commentsList, setCommentsList] = useState([])
     const [comment, setComment] = useState("")
@@ -36,7 +38,7 @@ function ProjectComments() {
     // Appel la route qui enregistre le commentaire en sous document dans le projet
     const postComment = async () => {
         const { email, token } = user;
-        const postCommentInBD = await fetch('http://localhost:3000/projects/comment', {
+        const postCommentInBD = await fetch(`${siteUrl}/projects/comment`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id, comment, email, token }),
@@ -65,7 +67,7 @@ function ProjectComments() {
     // Fonction qui appelle la route qui récupère les commentaires du projet
     const fetchProjectData = async (id) => {
         const { email, token } = user;
-        const fetchData = await fetch(`http://localhost:3000/projects/ProjectById`, {
+        const fetchData = await fetch(`${siteUrl}/projects/ProjectById`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id, email, token }),

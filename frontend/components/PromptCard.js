@@ -10,6 +10,8 @@ import SignalementModal from './SignalementModal';
 
 
 function PromptCard(props) {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
     const router = useRouter()
     const [modalIsOpen, setIsOpen] = useState(false);
     const [likeNumber, setLikeNumber] = useState(null)
@@ -36,7 +38,7 @@ function PromptCard(props) {
         }
         let id = props.id
         const { email, token } = user;
-        const request = await fetch('http://localhost:3000/users/getLikeNumberAndCommentsNumber', {
+        const request = await fetch(`${siteUrl}/users/getLikeNumberAndCommentsNumber`, {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, id, token })
@@ -48,7 +50,7 @@ function PromptCard(props) {
 
     const removePrompt = () => {
         const { email, token } = user;
-        fetch('http://localhost:3000/projects/prompt', {
+        fetch(`${siteUrl}/projects/prompt`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, token, id: props.id })
@@ -68,7 +70,7 @@ function PromptCard(props) {
     const like = async () => {
         let id = props.id
         const { email, token } = user;
-        const response = await fetch("http://localhost:3000/users/like", {
+        const response = await fetch(`${siteUrl}/users/like`, {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, id, token })

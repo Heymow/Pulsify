@@ -9,6 +9,7 @@ import { useRouter } from 'next/router';
 import { setLikedList } from '../reducers/user';
 
 function Profil() {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
   const [selectedTab, setSelectedTab] = useState(1);
   const [maBibliotheque, setMaBibliotheque] = useState(true);
@@ -30,7 +31,7 @@ function Profil() {
 
   const getAllLikedPosts = () => {
     const { email, token } = user;
-    fetch('http://localhost:3000/users/likedPosts', {
+    fetch(`${siteUrl}/users/likedPosts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, token })
@@ -54,7 +55,7 @@ function Profil() {
 
   const clickBibliotheque = () => {
     if (user.token) {
-      fetch('http://localhost:3000/users/projets', {
+      fetch(`${siteUrl}/users/projets`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: user.email, token: user.token })
