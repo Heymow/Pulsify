@@ -16,7 +16,6 @@ function PromptCard(props) {
     const [modalIsOpen, setIsOpen] = useState(false);
     const [likeNumber, setLikeNumber] = useState(null)
     const [commentNumber, setCommentNumber] = useState(null)
-    const [reRender, setReRender] = useState(false)
     const [isLiked, setIsLiked] = useState(false)
 
 
