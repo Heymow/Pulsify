@@ -8,11 +8,12 @@ const Keyword = require("../models/keywords")
 const Signalement = require("../models/signalements")
 const cloudinary = require('../cloudinary');
 
-// Middelware pour télécharger les données de l'audio
+// Middelware pour décoder les données de l'audio venant du frontend
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
+// Route pour ajouter un projet en BDD
 router.post("/add", async (req, res) => {
 
     // Vérification des éléments requis pour la route
