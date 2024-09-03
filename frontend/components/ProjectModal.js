@@ -7,6 +7,8 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 
 function ProjectModal(props) {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
     const [isPublic, setIsPublic] = useState(false);
     const [hoveredStars, setHoveredStars] = useState(0);
     const [score, setScore] = useState(0);
@@ -31,7 +33,7 @@ function ProjectModal(props) {
                 title: props.projectTitle,
             };
             // Envoyer les data du prompt sans l'audio
-            const saveDataForPrompt = await fetch("http://localhost:3000/projects/add", {
+            const saveDataForPrompt = await fetch(`${siteUrl}/projects/add`, {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dataForPrompt),
@@ -49,7 +51,7 @@ function ProjectModal(props) {
                     formData.append('audio', file[0]);
 
                     // Envoyer l'audio au backend au format formData
-                    const audioResponse = await fetch(`http://localhost:3000/projects/${responseDataPrompt.prompt._id}/upload-audio`, {
+                    const audioResponse = await fetch(`${siteUrl}/projects/${responseDataPrompt.prompt._id}/upload-audio`, {
                         method: "POST",
                         body: formData,
                     });

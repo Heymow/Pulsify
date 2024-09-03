@@ -8,6 +8,8 @@ import UserCard from './UserCard'
 
 
 function MessageCard(props) {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
     const user = useSelector((state) => state.user.value)
     const [modalIsOpen, setIsOpen] = useState(false);
 
@@ -24,7 +26,7 @@ function MessageCard(props) {
 
     // Fonction qui permet d'effacer un commentaire de la base de donnée
     const removeComment = async () => {
-        const response = await fetch('http://localhost:3000/projects/comment', {
+        const response = await fetch(`${siteUrl}/projects/comment`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

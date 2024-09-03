@@ -11,6 +11,8 @@ import { useRouter } from "next/router";
 
 
 function SignUp() {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
     const [name, setName] = useState("");
@@ -48,7 +50,7 @@ function SignUp() {
     }
 
     const createAccount = async () => {
-        const fetchSignin = await fetch('http://localhost:3000/users/signup', {
+        const fetchSignin = await fetch(`${siteUrl}/users/signup`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: email, username: username, firstname: name, password: password }),
@@ -103,7 +105,7 @@ function SignUp() {
             const googleID = jwtDecode(credentialResponse.credential).sub
 
 
-            const fetchSignin = await fetch('http://localhost:3000/users/signup/google', {
+            const fetchSignin = await fetch(`${siteUrl}/users/signup/google`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: emailGoogle, username: usernameGoogle, firstname: firstnameGoogle, google_id: googleID, picture: pictureGoogle }),

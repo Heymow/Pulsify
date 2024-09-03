@@ -8,13 +8,15 @@ import { useSelector } from 'react-redux'
 
 
 function SignalementModal(props) {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
   const [commentaire, setCommentaire] = useState('')
   const user = useSelector((state) => state.user.value)
 
   const handleValidation = async () => {
     if (props.id) {
       try {
-        const signalement = await fetch(`http://localhost:3000/projects/signalementProject`, {
+        const signalement = await fetch(`${siteUrl}/projects/signalementProject`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -38,7 +40,7 @@ function SignalementModal(props) {
 
     if (props.comment) {
       try {
-        const signalement = await fetch(`http://localhost:3000/projects/signalementComment`, {
+        const signalement = await fetch(`${siteUrl}/projects/signalementComment`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -10,6 +10,8 @@ import { useRouter } from "next/router";
 import { setLikedList } from "../reducers/user";
 
 function Explorer() {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
     const user = useSelector((state) => state.user.value)
     const [search, setSearch] = useState('');
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -44,7 +46,7 @@ function Explorer() {
     // Récupération de toutes les genres 
     const foundAllGenres = async () => {
         const { token, email } = user;
-        const foundGenres = await fetch('http://localhost:3000/genres/allGenres', {
+        const foundGenres = await fetch(`${siteUrl}/genres/allGenres`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ token, email }),
@@ -60,7 +62,7 @@ function Explorer() {
 
     const getAllLikedPosts = async () => {
         const { email, token } = user;
-        fetch('http://localhost:3000/users/likedPosts', {
+        fetch(`${siteUrl}/users/likedPosts`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, token })
@@ -105,7 +107,6 @@ function Explorer() {
             setCheckedProject(false)
             setErrorSearch(false)
             setCheckedGenre(false)
-            //setSearch('')
             setPlaceHolder('Recherche par auteur...')
         }
         if (props === 'Keyword') {
@@ -114,7 +115,6 @@ function Explorer() {
             setCheckedProject(false)
             setErrorSearch(false)
             setCheckedGenre(false)
-            //setSearch('')
             setPlaceHolder('Recherche par mots clés...')
         }
         if (props === 'Project') {
@@ -123,7 +123,6 @@ function Explorer() {
             setCheckedKeyword(false)
             setErrorSearch(false)
             setCheckedGenre(false)
-            //setSearch('')
             setPlaceHolder('Recherche par nom de projet...')
         }
         if (props === 'Genre') {
@@ -132,7 +131,6 @@ function Explorer() {
             setCheckedKeyword(false)
             setErrorSearch(false)
             setCheckedProject(false)
-            //setSearch('')
             setPlaceHolder('Recherche par genre...')
         }
 
@@ -169,7 +167,7 @@ function Explorer() {
     // Récupération des auteurs 
     const fetchAutor = async () => {
         const { email, token } = user;
-        const fetchAutor = await fetch('http://localhost:3000/users/search', {
+        const fetchAutor = await fetch(`${siteUrl}/users/search`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: search, token, email }),
@@ -187,7 +185,7 @@ function Explorer() {
     // Récupération des mots clés
     const fetchKeyword = async () => {
         const { email, token } = user;
-        const fetchKeyWord = await fetch('http://localhost:3000/keywords/search', {
+        const fetchKeyWord = await fetch(`${siteUrl}/keywords/search`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ keyword: search, email, token }),
@@ -205,7 +203,7 @@ function Explorer() {
     // Récupération des projets 
     const fetchProject = async () => {
         const { email, token } = user;
-        const fetchProject = await fetch('http://localhost:3000/projects/searchTitle', {
+        const fetchProject = await fetch(`${siteUrl}/projects/searchTitle`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ title: search, email, token }),
@@ -227,7 +225,7 @@ function Explorer() {
         if (genre) {
             // Récupération des projets pour la suggestion de recherche 
             setSearch(genre)
-            const fetchProject = await fetch('http://localhost:3000/genres/searchGenre', {
+            const fetchProject = await fetch(`${siteUrl}/genres/searchGenre`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ genre, email, token }),
@@ -242,7 +240,7 @@ function Explorer() {
             }
         } else {
             // Récupération des projets pour la recherche
-            const fetchProject = await fetch('http://localhost:3000/genres/searchGenre', {
+            const fetchProject = await fetch(`${siteUrl}/genres/searchGenre`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ genre: search, email, token }),

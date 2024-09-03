@@ -10,6 +10,8 @@ import GenresModal from '../components/GenresModal';
 import Header from '../components/Header';
 
 function Project() {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
     const user = useSelector((state) => state.user.value)
     const [projectTitle, setProjectTitle] = useState("");
     const [projectGenre, setProjectGenre] = useState('');
@@ -53,7 +55,7 @@ function Project() {
     const suggestions = [];
     const fetchSuggestions = async () => {
         const { token, email } = user;
-        const fetchSuggestions = await fetch('http://localhost:3000/keywords/suggestions',
+        const fetchSuggestions = await fetch(`${siteUrl}/keywords/suggestions`,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -118,7 +120,7 @@ function Project() {
     // Appeler la route de recherche sur Spotify
     const fetchGenreArtistOnSpotify = async (search) => {
         const { token, email } = user;
-        const fetchArtist = await fetch('http://localhost:3000/spotify', {
+        const fetchArtist = await fetch(`${siteUrl}/spotify`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ search, token, email }),
