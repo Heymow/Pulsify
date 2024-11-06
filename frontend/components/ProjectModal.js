@@ -69,6 +69,10 @@ function ProjectModal(props) {
 
                         await fetch(`${siteUrl}/projects/${projectId}/upload-audio`, {
                             method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                            },
+                            credentials: 'include',
                             body: formData
                         });
                     }

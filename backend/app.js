@@ -17,22 +17,15 @@ const genresRouter = require('./routes/genres');
 const app = express();
 
 // Définir les origines autorisées
-const allowedOrigins = ['https://pulsify-pink.vercel.app'];
-
 app.use(cors({
-    origin: function (origin, callback) {
-        // Autoriser les requêtes sans origin (ex. : curl, tests mobiles)
-        if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) === -1) {
-            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-            return callback(new Error(msg), false);
-        }
-        return callback(null, true);
-    },
-    methods: 'GET, POST, PUT, DELETE',
-    allowedHeaders: ['Content-Type', 'Authorization'],  // Autoriser les en-têtes requis
-    credentials: true     // Nécessaire pour les requêtes avec des informations d’authentification
+    origin: 'https://pulsify-pink.vercel.app',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
 }));
+
+// Ajoutez un middleware pour gérer les preflight requests
+app.options('*', cors());
 
 app.use(logger('dev'));
 
