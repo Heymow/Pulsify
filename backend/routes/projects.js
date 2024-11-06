@@ -155,42 +155,42 @@ router.post("/add", async (req, res) => {
 // Route pour télécharger l'audio sur Cloudinary et récupérer le lien
 
 
-router.post("/:projectId/upload-audio", upload.single('audio'), async (req, res) => {
-    const { chunkIndex, totalChunks } = req.body;
-    const projectId = req.params.projectId;
-    const chunk = req.file.buffer;
+// router.post("/:projectId/upload-audio", upload.single('audio'), async (req, res) => {
+//     const { chunkIndex, totalChunks } = req.body;
+//     const projectId = req.params.projectId;
+//     const chunk = req.file.buffer;
 
-    // Rechercher le projet dans la base de données
-    const project = await Project.findById(projectId);
-    if (!project) {
-        return res.status(404).json({ result: false, message: "Project not found" });
-    }
+//     // Rechercher le projet dans la base de données
+//     const project = await Project.findById(projectId);
+//     if (!project) {
+//         return res.status(404).json({ result: false, message: "Project not found" });
+//     }
 
-    // Options pour l'upload, sans `public_id` et `chunk_size`
-    const uploadOptions = {
-        resource_type: 'video',  // Audio traité comme "video" par Cloudinary
-        folder: 'audios',        // Dossier dans Cloudinary
-    };
+//     // Options pour l'upload, sans `public_id` et `chunk_size`
+//     const uploadOptions = {
+//         resource_type: 'video',  // Audio traité comme "video" par Cloudinary
+//         folder: 'audios',        // Dossier dans Cloudinary
+//     };
 
-    // Stream d'upload vers Cloudinary
-    const uploadStream = cloudinary.uploader.upload_stream(uploadOptions, async (error, result) => {
-        if (error) {
-            return res.status(500).json({ message: 'Upload failed', error });
-        }
+//     // Stream d'upload vers Cloudinary
+//     const uploadStream = cloudinary.uploader.upload_stream(uploadOptions, async (error, result) => {
+//         if (error) {
+//             return res.status(500).json({ message: 'Upload failed', error });
+//         }
 
-        // Si tous les morceaux sont reçus, finaliser l'upload
-        if (parseInt(chunkIndex) + 1 === parseInt(totalChunks)) {
-            project.audio = result.secure_url;
-            await project.save();
-            return res.json({ result: true, message: 'Audio uploaded successfully', url: result.secure_url });
-        } else {
-            return res.json({ result: true, message: `Chunk ${chunkIndex} received` });
-        }
-    });
+//         // Si tous les morceaux sont reçus, finaliser l'upload
+//         if (parseInt(chunkIndex) + 1 === parseInt(totalChunks)) {
+//             project.audio = result.secure_url;
+//             await project.save();
+//             return res.json({ result: true, message: 'Audio uploaded successfully', url: result.secure_url });
+//         } else {
+//             return res.json({ result: true, message: `Chunk ${chunkIndex} received` });
+//         }
+//     });
 
-    // Envoyer le buffer directement au flux de Cloudinary
-    streamifier.createReadStream(chunk).pipe(uploadStream);
-});
+//     // Envoyer le buffer directement au flux de Cloudinary
+//     streamifier.createReadStream(chunk).pipe(uploadStream);
+// });
 
 
 
@@ -232,32 +232,32 @@ router.post("/:projectId/upload-audio", upload.single('audio'), async (req, res)
 // });
 
 
-// router.post("/:projectId/upload-audio", upload.single('audio'), async (req, res) => {
+router.post("/:projectId/upload-audio", upload.single('audio'), async (req, res) => {
 
-//     const projectId = req.params.projectId;
-//     // Recherche dans la Bdd le projet pour lequel il faut rajouter l'audio
-//     const project = await Project.findById(projectId);
-//     if (!project) {
-//         return res.status(404).json({ result: false, message: "Project not found" });
-//     }
-//     // Ouverture du flux de données pour envoyer l'audio a Cloudinary
-//     cloudinary.uploader.upload_stream(
-//         { resource_type: 'video', folder: 'audios' },
-//         async (error, result) => {
-//             if (error) {
-//                 return res.status(500).json({ message: 'Upload failed', error });
-//             }
+    const projectId = req.params.projectId;
+    // Recherche dans la Bdd le projet pour lequel il faut rajouter l'audio
+    const project = await Project.findById(projectId);
+    if (!project) {
+        return res.status(404).json({ result: false, message: "Project not found" });
+    }
+    // Ouverture du flux de données pour envoyer l'audio a Cloudinary
+    cloudinary.uploader.upload_stream(
+        { resource_type: 'video', folder: 'audios' },
+        async (error, result) => {
+            if (error) {
+                return res.status(500).json({ message: 'Upload failed', error });
+            }
 
-//             // Mise à jour du projet pour ajouter l'audio
-//             project.audio = result.secure_url;
-//             await project.save();
+            // Mise à jour du projet pour ajouter l'audio
+            project.audio = result.secure_url;
+            await project.save();
 
-//             res.json({ result: true, message: 'Audio uploaded successfully', url: result.secure_url });
-//         }
-//         // Fermeture du flux de données 
-//     ).end(req.file.buffer);
+            res.json({ result: true, message: 'Audio uploaded successfully', url: result.secure_url });
+        }
+        // Fermeture du flux de données 
+    ).end(req.file.buffer);
 
-// });
+});
 
 
 // Recherche par titre
