@@ -30,10 +30,9 @@ app.use(cors({
         return callback(null, true);
     },
     methods: 'GET, POST, PUT, DELETE',
-    allowedHeaders: '*',  // Autoriser tous les en-têtes requis
+    allowedHeaders: ['Content-Type', 'Authorization'],  // Autoriser les en-têtes requis
     credentials: true     // Nécessaire pour les requêtes avec des informations d’authentification
 }));
-
 
 app.use(logger('dev'));
 
