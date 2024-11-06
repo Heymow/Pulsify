@@ -15,7 +15,6 @@ function ProjectModal(props) {
     const [file, setFile] = useState(null);
     const [message, setMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('')
-    const [audioUrl, setAudioUrl] = useState('')
 
     const user = useSelector((state) => state.user.value);
     const router = useRouter()
@@ -31,7 +30,7 @@ function ProjectModal(props) {
                 username: user.username,
                 email: user.email,
                 token: user.token,
-                title: props.projectTitle,
+                name: props.projectTitle,
             };
             // Envoyer les data du prompt sans l'audio
             const saveDataForPrompt = await fetch(`${siteUrl}/projects/add`, {
@@ -43,103 +42,36 @@ function ProjectModal(props) {
             const responseDataPrompt = await saveDataForPrompt.json();
 
 
-            if (responseDataPrompt.result) {
-                async function fetchAudioUrl() {
-                    try {
-                        const response = await fetch(`${siteUrl}/projects/${responseDataPrompt.prompt._id}/${audioUrl}/suno-URL`, {
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${user.token}`
-                            }
-                        });
-                        const data = await response.json();
 
-                        if (data.audioUrl) {
-                            const audio = new Audio(data.audioUrl);
-                            audio.play(); // Lecture de l'audio
-                        } else {
-                            console.error('Audio non trouvé.');
-                        }
-                    } catch (error) {
-                        console.error('Erreur lors de la récupération de l’audio :', error);
+            if (responseDataPrompt.result) {
+                setMessage(`Ajout de l'audio en cours`);
+
+                // Envoyer le fichier audio avec le l'id du prompt sauvegardé 
+                if (file && file.length > 0) {
+                    const formData = new FormData();
+                    formData.append('audio', file[0]);
+
+                    // Envoyer l'audio au backend au format formData
+                    const audioResponse = await fetch(`${siteUrl}/projects/${responseDataPrompt.prompt._id}/upload-audio`, {
+                        method: "POST",
+                        body: formData,
+                    });
+                    const audioResult = await audioResponse.json();
+
+                    if (audioResult.result) {
+                        setMessage(`L'audio a été ajouté avec succes`);
+
+                    } else {
+                        setMessage(`Echec de l'ajout de l'audio`);
                     }
                 }
-
-                fetchAudioUrl();
-
-
-                // setMessage(`Ajout de l'audio en cours`);
-
-                // // Envoyer le fichier audio avec le l'id du prompt sauvegardé 
-                // if (file && file.length > 0) {
-
-                //     file = file[0]
-                //     const projectId = responseDataPrompt.prompt._id
-                //     const chunkSize = 4 * 1024 * 1024
-
-                //     const totalChunks = Math.ceil(file.size / chunkSize);
-                //     const uploadId = Date.now(); // Un ID unique pour ce fichier
-
-
-                //     for (let i = 0; i < totalChunks; i++) {
-                //         const start = i * chunkSize;
-                //         const end = Math.min(file.size, start + chunkSize);
-                //         const chunk = file.slice(start, end);
-
-                //         const formData = new FormData();
-                //         formData.append('audio', chunk);
-                //         formData.append('uploadId', uploadId); // ID unique pour assembler les morceaux
-                //         formData.append('chunkIndex', i); // Index du morceau pour l'ordre
-                //         formData.append('totalChunks', totalChunks); // Nombre total de morceaux
-
-                //         await fetch(`${siteUrl}/projects/${projectId}/upload-audio`, {
-                //             method: 'POST',
-                //             body: formData
-                //         });
-                //     }
-                // }
-                // const audioResponse = await fetch(`${siteUrl}/projects/${responseDataPrompt.prompt._id}/audio-url`, {
-                //     method: 'GET'
-                // });
-
-                // const audioResult = await audioResponse.json();
-
-                // if (audioResult.result) {
-                //     console.log("URL finale de l'audio :", audioResult.url);
-                //     setMessage("L'audio a été assemblé et uploadé avec succès.");
-                // } else {
-                //     setMessage("Erreur lors de l'upload de l'audio.");
-                // }
-
-
-                //     const formData = new FormData();
-                //     formData.append('audio', file[0]);
-
-                //     // Envoyer l'audio au backend au format formData
-                //     const audioResponse = await fetch(`${siteUrl}/projects/${responseDataPrompt.prompt._id}/upload-audio`, {
-                //         method: "POST",
-                //         body: formData,
-                //     });
-                //     const audioResult = await audioResponse.json();
-
-                //     if (audioResult.result) {
-                //         setMessage(`L'audio a été ajouté avec succes`);
-
-                //     } else {
-                //         setMessage(`Echec de l'ajout de l'audio`);
-                //     }
-
-                // } else {
-                //     setMessage('Echec de la sauvegarde');
-                // }
-
-                // setErrorMessage("")
-                // router.push('/Profil')
-
+            } else {
+                setMessage('Echec de la sauvegarde');
             }
         }
-    }
+        setErrorMessage("")
+        router.push('/Profil')
+    };
 
     const mouseOver = (rating) => {
         setHoveredStars(rating)
@@ -211,7 +143,6 @@ function ProjectModal(props) {
                 </div>
                 <div className={styles.modalBtnContainer}>
                     <button className={styles.btn} onClick={props.onRequestClose}>Retour</button>
-                    <input placeholder="Suno link" width={350} onChange={e => setAudioUrl(e.target.value)}></input>
                     <button className={styles.btn} onClick={() => { score !== 0 ? uploadPrompt() : setErrorMessage("Merci de renseigner une note") }}>Valider</button>
 
                 </div>

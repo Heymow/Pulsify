@@ -7,7 +7,7 @@ const User = require('../models/users')
 const Keyword = require("../models/keywords")
 const Signalement = require("../models/signalements")
 const cloudinary = require('../cloudinary');
-const puppeteer = require('puppeteer');
+
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -152,105 +152,6 @@ router.post("/add", async (req, res) => {
     res.json({ result: true, prompt: savedProject });
 })
 
-// Route pour télécharger l'audio sur Cloudinary et récupérer le lien
-
-
-// router.post("/:projectId/upload-audio", upload.single('audio'), async (req, res) => {
-//     const { uploadId, chunkIndex, totalChunks } = req.body;
-//     const projectId = req.params.projectId;
-//     const chunk = req.file.buffer;
-
-//     // Rechercher le projet dans la base de données
-//     const project = await Project.findById(projectId);
-//     if (!project) {
-//         return res.status(404).json({ result: false, message: "Project not found" });
-//     }
-
-//     // Options pour l'upload, sans `public_id` et `chunk_size`
-//     const uploadOptions = {
-//         resource_type: 'video',  // Audio traité comme "video" par Cloudinary
-//         folder: 'audios',
-//            public_id: uploadId,        // Un ID unique pour reconstituer le fichier complet
-
-//     };
-
-//     // Stream d'upload vers Cloudinary
-//     const uploadStream = cloudinary.uploader.upload_stream(uploadOptions, async (error, result) => {
-//         if (error) {
-//             return res.status(500).json({ message: 'Upload failed', error });
-//         }
-
-//         // Si tous les morceaux sont reçus, finaliser l'upload
-//         if (parseInt(chunkIndex) + 1 === parseInt(totalChunks)) {
-//             project.audio = result.secure_url;
-//             await project.save();
-//             return res.json({ result: true, message: 'Audio uploaded successfully', url: result.secure_url });
-//         } else {
-//             return res.json({ result: true, message: `Chunk ${chunkIndex} received` });
-//         }
-//     });
-
-//     // Envoyer le buffer directement au flux de Cloudinary
-//     streamifier.createReadStream(chunk).pipe(uploadStream);
-// });
-
-
-
-// router.post("/:projectId/upload-audio", async (req, res) => {
-//     // Ajout des headers CORS spécifiques pour cette route
-//     // res.header('Access-Control-Allow-Origin', 'https://pulsify-pink.vercel.app');
-//     // res.header('Access-Control-Allow-Headers', 'Content-Type');
-
-//     res.setHeader('Access-Control-Allow-Origin', '*');
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-//     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-//     const { uploadId, chunkIndex, totalChunks } = req.body;
-//     const projectId = req.params.projectId;
-//     const chunk = req.file.buffer;
-
-//     // Stocker temporairement le morceau si nécessaire
-//     const project = await Project.findById(projectId);
-//     if (!project) {
-//         return res.status(404).json({ result: false, message: "Project not found" });
-//     }
-
-//     // Transférer le morceau directement à Cloudinary
-//     const uploadOptions = {
-//         resource_type: 'video',     // Audio traité comme "video" par Cloudinary
-//         folder: 'audios',// Dossier dans Cloudinary
-//         upload_preset: 'ml_default',
-//         public_id: uploadId,        // Un ID unique pour reconstituer le fichier complet
-//         chunk_size: 4000000,        // Taille des morceaux (par exemple, 4 Mo)
-//     };
-
-//     const uploadStream = cloudinary.uploader.upload_stream(uploadOptions, async (error, result) => {
-//         if (error) {
-//             return res.status(500).json({ message: 'Upload failed', error });
-//         }
-
-//         if (parseInt(chunkIndex) + 1 === parseInt(totalChunks)) {
-//             project.audio = result.secure_url;
-//             await project.save();
-//             res.json({ result: true, message: 'Audio uploaded successfully', url: result.secure_url });
-//         }
-//         return res.json({ result: true, message: `Chunk ${chunkIndex} received` });
-//     });
-
-//     streamifier.createReadStream(chunk).pipe(uploadStream);
-// });
-
-// router.get("/:projectId/audio-url", async (req, res) => {
-//     const projectId = req.params.projectId;
-//     const project = await Project.findById(projectId);
-
-//     if (!project || !project.audio) {
-//         return res.status(404).json({ result: false, message: "Audio not found" });
-//     }
-
-//     res.json({ result: true, url: project.audio });
-// });
-
 router.post("/:projectId/upload-audio", upload.single('audio'), async (req, res) => {
 
     const projectId = req.params.projectId;
@@ -278,42 +179,7 @@ router.post("/:projectId/upload-audio", upload.single('audio'), async (req, res)
 
 });
 
-router.get("/:projectId/:URLSuno/suno-URL", async (req, res) => {
-    const projectId = req.params.projectId;
-    const URLSuno = req.params.URLSuno;
 
-    try {
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-        await page.goto(URLSuno, { waitUntil: 'networkidle2' }); // Attendre que le réseau soit inactif
-
-        // Localisez l'URL de l'audio
-        const audioSrc = await page.evaluate(() => {
-            const audioElement = document.querySelector(`#active-audio-play`);
-            return audioElement ? audioElement.src : null;
-        });
-
-        await browser.close();
-
-        if (audioSrc) {
-            res.set('Access-Control-Allow-Origin', 'https://pulsify-pink.vercel.app');
-            res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-            res.json({ audioUrl: audioSrc });
-        } else {
-            res.status(404).json({ error: 'Audio not found' });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
-router.options("/:projectId/:URLSuno/suno-URL", (req, res) => {
-    res.set('Access-Control-Allow-Origin', 'https://pulsify-pink.vercel.app');
-    res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.sendStatus(200);
-});
 
 
 

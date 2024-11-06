@@ -15,32 +15,16 @@ let spotifyRouter = require('./routes/spotify')
 var projectsRouter = require('./routes/projects');
 var keywordsRouter = require('./routes/keywords');
 var genresRouter = require('./routes/genres');
+var searchRouter = require('./routes/search');
 
 var app = express();
 
-const allowedOrigins = ['https://pulsify-pink.vercel.app'];
-
-app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-    maxAge: 86400
-}));
-
-// Gestion des requêtes préflight
-app.options('*', cors());
+const cors = require('cors');
+app.use(cors());
 
 app.use(logger('dev'));
-// Augmenter la limite à 50 Mo
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -50,7 +34,6 @@ app.use('/spotify', spotifyRouter);
 app.use('/projects', projectsRouter);
 app.use('/keywords', keywordsRouter);
 app.use('/genres', genresRouter);
-
-
+app.use('/search', searchRouter);
 
 module.exports = app;
