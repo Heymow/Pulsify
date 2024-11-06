@@ -7,7 +7,7 @@ const User = require('../models/users')
 const Keyword = require("../models/keywords")
 const Signalement = require("../models/signalements")
 const cloudinary = require('../cloudinary');
-const streamifier = require('../streamifier');
+const streamifier = require('streamifier');
 
 
 
