@@ -47,8 +47,8 @@ function ProjectModal(props) {
                 async function fetchAudioUrl() {
                     try {
                         const response = await fetch(`${siteUrl}/projects/${responseDataPrompt.prompt._id}/${audioUrl}/suno-URL`, {
-                            headers: { 'Content-Type': 'application/json' },
                             method: 'GET',
+                            headers: { 'Content-Type': 'application/json' },
                         }
                         );
                         const data = await response.json();

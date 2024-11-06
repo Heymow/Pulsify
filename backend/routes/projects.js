@@ -279,13 +279,13 @@ router.post("/:projectId/upload-audio", upload.single('audio'), async (req, res)
 });
 
 router.get("/:projectId/:URLSuno/suno-URL", async (req, res) => {
-
     const projectId = req.params.projectId;
     const URLSuno = req.params.URLSuno;
+
     try {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
-        await page.goto(URLSuno); // L'URL de la page cible
+        await page.goto(URLSuno, { waitUntil: 'networkidle2' }); // Attendre que le réseau soit inactif
 
         // Localisez l'URL de l'audio
         const audioSrc = await page.evaluate(() => {
@@ -296,6 +296,8 @@ router.get("/:projectId/:URLSuno/suno-URL", async (req, res) => {
         await browser.close();
 
         if (audioSrc) {
+            res.set('Access-Control-Allow-Origin', 'https://pulsify-pink.vercel.app');
+            res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
             res.json({ audioUrl: audioSrc });
         } else {
             res.status(404).json({ error: 'Audio not found' });
@@ -306,6 +308,12 @@ router.get("/:projectId/:URLSuno/suno-URL", async (req, res) => {
     }
 });
 
+router.options("/:projectId/:URLSuno/suno-URL", (req, res) => {
+    res.set('Access-Control-Allow-Origin', 'https://pulsify-pink.vercel.app');
+    res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.sendStatus(200);
+});
 
 
 

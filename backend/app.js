@@ -18,12 +18,24 @@ var genresRouter = require('./routes/genres');
 
 var app = express();
 
-const cors = require('cors');
+const allowedOrigins = ['https://pulsify-pink.vercel.app'];
+
 app.use(cors({
-    origin: 'https://pulsify-pink.vercel.app', // Domaine autorisé
-    methods: ['GET', 'POST', 'OPTIONS'],       // Méthodes autorisées
-    allowedHeaders: ['Content-Type', 'Authorization'] // En-têtes autorisés
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+    maxAge: 86400
 }));
+
+// Gestion des requêtes préflight
+app.options('*', cors());
 
 app.use(logger('dev'));
 // Augmenter la limite à 50 Mo
