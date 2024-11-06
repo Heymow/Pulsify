@@ -49,6 +49,8 @@ function ProjectModal(props) {
                         const response = await fetch(`${siteUrl}/projects/${responseDataPrompt.prompt._id}/${audioUrl}/suno-URL`, {
                             method: 'GET',
                             headers: { 'Content-Type': 'application/json' },
+                            mode: 'cors',
+
                         }
                         );
                         const data = await response.json();
