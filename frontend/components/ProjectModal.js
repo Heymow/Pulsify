@@ -46,7 +46,11 @@ function ProjectModal(props) {
             if (responseDataPrompt.result) {
                 async function fetchAudioUrl() {
                     try {
-                        const response = await fetch(`${siteUrl}/projects/${responseDataPrompt.prompt._id}/${audioUrl}/suno-URL`);
+                        const response = await fetch(`${siteUrl}/projects/${responseDataPrompt.prompt._id}/${audioUrl}/suno-URL`, {
+                            headers: { 'Content-Type': 'application/json' },
+                            method: 'GET',
+                        }
+                        );
                         const data = await response.json();
 
                         if (data.audioUrl) {
