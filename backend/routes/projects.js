@@ -9,7 +9,8 @@ const Signalement = require("../models/signalements")
 const cloudinary = require('../cloudinary');
 const streamifier = require('streamifier');
 const multer = require('multer');
-
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 
 // Route pour ajouter un projet en BDD
