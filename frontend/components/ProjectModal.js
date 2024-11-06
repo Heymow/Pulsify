@@ -74,7 +74,7 @@ function ProjectModal(props) {
                         });
                     }
                 }
-                const audioResponse = await fetch(`${siteUrl}/projects/${projectId}/audio-url`, {
+                const audioResponse = await fetch(`${siteUrl}/projects/${responseDataPrompt.prompt._id}/audio-url`, {
                     method: 'GET'
                 });
 
