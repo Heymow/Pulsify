@@ -152,11 +152,6 @@ router.post("/add", async (req, res) => {
 
 // Route pour télécharger l'audio sur Cloudinary et récupérer le lien
 
-cloudinary.config({
-    cloud_name: 'process.env.CLOUDINARY_CLOUD_NAME',       // Gardé secret dans le backend
-    api_key: 'process.env.CLOUDINARY_API_KEY',             // Clé API sécurisée
-    api_secret: 'process.env.CLOUDINARY_API_SECRET',       // Secret API
-});
 
 router.post("/:projectId/upload-audio", async (req, res) => {
     const { uploadId, chunkIndex, totalChunks } = req.body;
@@ -173,7 +168,7 @@ router.post("/:projectId/upload-audio", async (req, res) => {
     const uploadOptions = {
         resource_type: 'video',     // Audio traité comme "video" par Cloudinary
         folder: 'audios',           // Dossier dans Cloudinary
-        // upload_preset: process.env.CLOUDINARY_CLOUD_NAME, // Préréglage de téléchargement
+        // upload_preset: "your_preset", // Préréglage de téléchargement
         public_id: uploadId,        // Un ID unique pour reconstituer le fichier complet
         chunk_size: 4000000,        // Taille des morceaux (par exemple, 4 Mo)
     };
