@@ -19,7 +19,7 @@ var genresRouter = require('./routes/genres');
 var app = express();
 
 const cors = require('cors');
-app.use(cors({ origin: 'https://pulsify-pink.vercel.app' }));
+app.use(cors());
 
 app.use(logger('dev'));
 // Augmenter la limite à 50 Mb
