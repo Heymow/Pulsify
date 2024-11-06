@@ -154,7 +154,7 @@ router.post("/add", async (req, res) => {
 // Route pour télécharger l'audio sur Cloudinary et récupérer le lien
 
 
-router.post("/:projectId/upload-audio", async (req, res) => {
+router.post("/:projectId/upload-audio", upload.single('audio'), async (req, res) => {
     const { chunkIndex, totalChunks } = req.body;
     const projectId = req.params.projectId;
     const chunk = req.file.buffer;
