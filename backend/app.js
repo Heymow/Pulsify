@@ -19,7 +19,13 @@ var genresRouter = require('./routes/genres');
 var app = express();
 
 const cors = require('cors');
-app.use(cors());
+app.use(cors({
+    origin: '*',  // Autoriser toutes les origines pour tester
+    methods: 'GET, POST, PUT, DELETE',
+    allowedHeaders: 'Content-Type, Authorization',
+    credentials: true
+}));
+app.options('*', cors());
 
 app.use(logger('dev'));
 // Augmenter la limite à 50 Mo
