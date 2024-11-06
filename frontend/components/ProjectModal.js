@@ -69,6 +69,7 @@ function ProjectModal(props) {
 
                         await fetch(`${siteUrl}/projects/${projectId}/upload-audio`, {
                             method: 'POST',
+                            mode: 'no-cors',
                             body: formData
                         });
                     }
