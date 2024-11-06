@@ -98,88 +98,88 @@ function ProjectModal(props) {
         } else {
             setMessage('Echec de la sauvegarde');
         }
+
+        setErrorMessage("")
+        router.push('/Profil')
+    };
+
+    const mouseOver = (rating) => {
+        setHoveredStars(rating)
     }
-    setErrorMessage("")
-    router.push('/Profil')
-};
-
-const mouseOver = (rating) => {
-    setHoveredStars(rating)
-}
-const mouseLeave = () => {
-    setHoveredStars(0)
-}
-const clickToRate = (rating) => {
-    setScore(rating)
-}
+    const mouseLeave = () => {
+        setHoveredStars(0)
+    }
+    const clickToRate = (rating) => {
+        setScore(rating)
+    }
 
 
-return (
-    <Modal
-        isOpen={props.isOpen}
-        className={styles.modalContainer}
-        onRequestClose={props.onRequestClose}
-        contentLabel="Example Modal">
-        <div className={styles.content}>
-            <div className={styles.modalTitleContent}>
-                <h1 className={styles.modalTitle}>{props.projectTitle}</h1>
-            </div>
-            <div className={styles.genreTxt}>Genre du projet : {props.projectGenre}</div>
-            <p className={styles.promptContainer}>{props.prompt}</p>
-            <div className={styles.import}>
-                <input
-                    type="file"
-                    className={styles.inputImport}
-                    onChange={(e) => setFile(e.target.files)}
-                    accept="audio/*"
-                />
-                {message && <p>{message}</p>}
-            </div>
-            <p className={styles.errorMessage}>{errorMessage}</p>
-            <div className={styles.voteContainer}>
-                <div className={styles.voteContainerLeft}>
-                    <p className={styles.voteTxt}>Ecoutez sur Suno, puis donnez votre note :</p>
-                    <div className={styles.voteStars}>
-                        {[1, 2, 3, 4, 5].map((star) => {
-                            const isStarSelected = score >= star;
-                            const isStarHovered = hoveredStars >= star;
+    return (
+        <Modal
+            isOpen={props.isOpen}
+            className={styles.modalContainer}
+            onRequestClose={props.onRequestClose}
+            contentLabel="Example Modal">
+            <div className={styles.content}>
+                <div className={styles.modalTitleContent}>
+                    <h1 className={styles.modalTitle}>{props.projectTitle}</h1>
+                </div>
+                <div className={styles.genreTxt}>Genre du projet : {props.projectGenre}</div>
+                <p className={styles.promptContainer}>{props.prompt}</p>
+                <div className={styles.import}>
+                    <input
+                        type="file"
+                        className={styles.inputImport}
+                        onChange={(e) => setFile(e.target.files)}
+                        accept="audio/*"
+                    />
+                    {message && <p>{message}</p>}
+                </div>
+                <p className={styles.errorMessage}>{errorMessage}</p>
+                <div className={styles.voteContainer}>
+                    <div className={styles.voteContainerLeft}>
+                        <p className={styles.voteTxt}>Ecoutez sur Suno, puis donnez votre note :</p>
+                        <div className={styles.voteStars}>
+                            {[1, 2, 3, 4, 5].map((star) => {
+                                const isStarSelected = score >= star;
+                                const isStarHovered = hoveredStars >= star;
 
-                            let color = "gray";
-                            if (isStarHovered && !isStarSelected) {
-                                color = "white";
-                            } else if (isStarSelected) {
-                                color = "#B300F2";
-                            }
+                                let color = "gray";
+                                if (isStarHovered && !isStarSelected) {
+                                    color = "white";
+                                } else if (isStarSelected) {
+                                    color = "#B300F2";
+                                }
 
-                            return (
-                                <FontAwesomeIcon
-                                    key={star}
-                                    icon={faStar}
-                                    style={{ color }}
-                                    onMouseEnter={() => mouseOver(star)}
-                                    onMouseLeave={mouseLeave}
-                                    onClick={() => clickToRate(star)}
-                                />
-                            );
-                        })}
-                    </div>
-                    <div className={styles.public} onClick={() => setIsPublic(!isPublic)}>
-                        <div
-                            className={isPublic ? styles.isPublic : styles.isNotPublic}
-                        />
-                        <span className={styles.text}>Public</span>
+                                return (
+                                    <FontAwesomeIcon
+                                        key={star}
+                                        icon={faStar}
+                                        style={{ color }}
+                                        onMouseEnter={() => mouseOver(star)}
+                                        onMouseLeave={mouseLeave}
+                                        onClick={() => clickToRate(star)}
+                                    />
+                                );
+                            })}
+                        </div>
+                        <div className={styles.public} onClick={() => setIsPublic(!isPublic)}>
+                            <div
+                                className={isPublic ? styles.isPublic : styles.isNotPublic}
+                            />
+                            <span className={styles.text}>Public</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div className={styles.modalBtnContainer}>
-                <button className={styles.btn} onClick={props.onRequestClose}>Retour</button>
-                <button className={styles.btn} onClick={() => { score !== 0 ? uploadPrompt() : setErrorMessage("Merci de renseigner une note") }}>Valider</button>
+                <div className={styles.modalBtnContainer}>
+                    <button className={styles.btn} onClick={props.onRequestClose}>Retour</button>
+                    <button className={styles.btn} onClick={() => { score !== 0 ? uploadPrompt() : setErrorMessage("Merci de renseigner une note") }}>Valider</button>
+
+                </div>
 
             </div>
-
-        </div>
-    </Modal>
-);
+        </Modal>
+    );
 }
 
 export default ProjectModal;
