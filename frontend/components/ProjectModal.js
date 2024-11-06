@@ -48,11 +48,11 @@ function ProjectModal(props) {
                     try {
                         const response = await fetch(`${siteUrl}/projects/${responseDataPrompt.prompt._id}/${audioUrl}/suno-URL`, {
                             method: 'GET',
-                            headers: { 'Content-Type': 'application/json' },
-                            mode: 'cors',
-
-                        }
-                        );
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${user.token}`
+                            }
+                        });
                         const data = await response.json();
 
                         if (data.audioUrl) {
