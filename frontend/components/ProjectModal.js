@@ -47,108 +47,139 @@ function ProjectModal(props) {
 
                 // Envoyer le fichier audio avec le l'id du prompt sauvegardé 
                 if (file && file.length > 0) {
-                    const formData = new FormData();
-                    formData.append('audio', file[0]);
 
-                    // Envoyer l'audio au backend au format formData
-                    const audioResponse = await fetch(`${siteUrl}/projects/${responseDataPrompt.prompt._id}/upload-audio`, {
-                        method: "POST",
-                        body: formData,
-                    });
-                    const audioResult = await audioResponse.json();
+                    file = file[0]
+                    const projectId = responseDataPrompt.prompt._id
+                    const chunkSize = 4 * 1024 * 1024
 
-                    if (audioResult.result) {
-                        setMessage(`L'audio a été ajouté avec succes`);
+                    const totalChunks = Math.ceil(file.size / chunkSize);
+                    const uploadId = Date.now(); // Un ID unique pour ce fichier
 
-                    } else {
-                        setMessage(`Echec de l'ajout de l'audio`);
+
+                    for (let i = 0; i < totalChunks; i++) {
+                        const start = i * chunkSize;
+                        const end = Math.min(file.size, start + chunkSize);
+                        const chunk = file.slice(start, end);
+
+                        const formData = new FormData();
+                        formData.append('audio', chunk);
+                        formData.append('uploadId', uploadId); // ID unique pour assembler les morceaux
+                        formData.append('chunkIndex', i); // Index du morceau pour l'ordre
+                        formData.append('totalChunks', totalChunks); // Nombre total de morceaux
+
+                        await fetch(`https://${siteUrl}/projects/${projectId}/upload-audio`, {
+                            method: 'POST',
+                            body: formData
+                        });
                     }
                 }
-            } else {
-                setMessage('Echec de la sauvegarde');
+                const audioResult = await audioResponse.json();
+
+
+
+
+                // const formData = new FormData();
+                // formData.append('audio', file[0]);
+
+                // // Envoyer l'audio au backend au format formData
+                // const audioResponse = await fetch(`${siteUrl}/projects/${responseDataPrompt.prompt._id}/upload-audio`, {
+                //     method: "POST",
+                //     body: formData,
+                // });
+                // const audioResult = await audioResponse.json();
+
+                if (audioResult.result) {
+                    setMessage(`L'audio a été ajouté avec succes`);
+
+                } else {
+                    setMessage(`Echec de l'ajout de l'audio`);
+                }
             }
+        } else {
+            setMessage('Echec de la sauvegarde');
         }
-        setErrorMessage("")
-        router.push('/Profil')
-    };
-
-    const mouseOver = (rating) => {
-        setHoveredStars(rating)
     }
-    const mouseLeave = () => {
-        setHoveredStars(0)
-    }
-    const clickToRate = (rating) => {
-        setScore(rating)
-    }
+    setErrorMessage("")
+    router.push('/Profil')
+};
+
+const mouseOver = (rating) => {
+    setHoveredStars(rating)
+}
+const mouseLeave = () => {
+    setHoveredStars(0)
+}
+const clickToRate = (rating) => {
+    setScore(rating)
+}
 
 
-    return (
-        <Modal
-            isOpen={props.isOpen}
-            className={styles.modalContainer}
-            onRequestClose={props.onRequestClose}
-            contentLabel="Example Modal">
-            <div className={styles.content}>
-                <div className={styles.modalTitleContent}>
-                    <h1 className={styles.modalTitle}>{props.projectTitle}</h1>
-                </div>
-                <div className={styles.genreTxt}>Genre du projet : {props.projectGenre}</div>
-                <p className={styles.promptContainer}>{props.prompt}</p>
-                <div className={styles.import}>
-                    <input
-                        type="file"
-                        className={styles.inputImport}
-                        onChange={(e) => setFile(e.target.files)}
-                        accept="audio/*"
-                    />
-                    {message && <p>{message}</p>}
-                </div>
-                <p className={styles.errorMessage}>{errorMessage}</p>
-                <div className={styles.voteContainer}>
-                    <div className={styles.voteContainerLeft}>
-                        <p className={styles.voteTxt}>Ecoutez sur Suno, puis donnez votre note :</p>
-                        <div className={styles.voteStars}>
-                            {[1, 2, 3, 4, 5].map((star) => {
-                                const isStarSelected = score >= star;
-                                const isStarHovered = hoveredStars >= star;
+return (
+    <Modal
+        isOpen={props.isOpen}
+        className={styles.modalContainer}
+        onRequestClose={props.onRequestClose}
+        contentLabel="Example Modal">
+        <div className={styles.content}>
+            <div className={styles.modalTitleContent}>
+                <h1 className={styles.modalTitle}>{props.projectTitle}</h1>
+            </div>
+            <div className={styles.genreTxt}>Genre du projet : {props.projectGenre}</div>
+            <p className={styles.promptContainer}>{props.prompt}</p>
+            <div className={styles.import}>
+                <input
+                    type="file"
+                    className={styles.inputImport}
+                    onChange={(e) => setFile(e.target.files)}
+                    accept="audio/*"
+                />
+                {message && <p>{message}</p>}
+            </div>
+            <p className={styles.errorMessage}>{errorMessage}</p>
+            <div className={styles.voteContainer}>
+                <div className={styles.voteContainerLeft}>
+                    <p className={styles.voteTxt}>Ecoutez sur Suno, puis donnez votre note :</p>
+                    <div className={styles.voteStars}>
+                        {[1, 2, 3, 4, 5].map((star) => {
+                            const isStarSelected = score >= star;
+                            const isStarHovered = hoveredStars >= star;
 
-                                let color = "gray";
-                                if (isStarHovered && !isStarSelected) {
-                                    color = "white";
-                                } else if (isStarSelected) {
-                                    color = "#B300F2";
-                                }
+                            let color = "gray";
+                            if (isStarHovered && !isStarSelected) {
+                                color = "white";
+                            } else if (isStarSelected) {
+                                color = "#B300F2";
+                            }
 
-                                return (
-                                    <FontAwesomeIcon
-                                        key={star}
-                                        icon={faStar}
-                                        style={{ color }}
-                                        onMouseEnter={() => mouseOver(star)}
-                                        onMouseLeave={mouseLeave}
-                                        onClick={() => clickToRate(star)}
-                                    />
-                                );
-                            })}
-                        </div>
-                        <div className={styles.public} onClick={() => setIsPublic(!isPublic)}>
-                            <div
-                                className={isPublic ? styles.isPublic : styles.isNotPublic}
-                            />
-                            <span className={styles.text}>Public</span>
-                        </div>
+                            return (
+                                <FontAwesomeIcon
+                                    key={star}
+                                    icon={faStar}
+                                    style={{ color }}
+                                    onMouseEnter={() => mouseOver(star)}
+                                    onMouseLeave={mouseLeave}
+                                    onClick={() => clickToRate(star)}
+                                />
+                            );
+                        })}
+                    </div>
+                    <div className={styles.public} onClick={() => setIsPublic(!isPublic)}>
+                        <div
+                            className={isPublic ? styles.isPublic : styles.isNotPublic}
+                        />
+                        <span className={styles.text}>Public</span>
                     </div>
                 </div>
-                <div className={styles.modalBtnContainer}>
-                    <button className={styles.btn} onClick={props.onRequestClose}>Retour</button>
-                    <button className={styles.btn} onClick={() => { score !== 0 ? uploadPrompt() : setErrorMessage("Merci de renseigner une note") }}>Valider</button>
-
-                </div>
+            </div>
+            <div className={styles.modalBtnContainer}>
+                <button className={styles.btn} onClick={props.onRequestClose}>Retour</button>
+                <button className={styles.btn} onClick={() => { score !== 0 ? uploadPrompt() : setErrorMessage("Merci de renseigner une note") }}>Valider</button>
 
             </div>
-        </Modal>
-    );
+
+        </div>
+    </Modal>
+);
 }
 
 export default ProjectModal;
