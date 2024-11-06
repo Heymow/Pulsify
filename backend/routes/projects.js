@@ -226,9 +226,8 @@ router.post("/:projectId/upload-audio", async (req, res) => {
             project.audio = result.secure_url;
             await project.save();
             res.json({ result: true, message: 'Audio uploaded successfully', url: result.secure_url });
-        } else {
-            res.json({ result: true, message: `Chunk ${chunkIndex} received` });
         }
+        return res.json({ result: true, message: `Chunk ${chunkIndex} received` });
     });
 
     streamifier.createReadStream(chunk).pipe(uploadStream);
