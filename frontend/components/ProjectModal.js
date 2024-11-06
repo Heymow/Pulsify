@@ -74,7 +74,18 @@ function ProjectModal(props) {
                         });
                     }
                 }
+                const audioResponse = await fetch(`${siteUrl}/projects/${projectId}/audio-url`, {
+                    method: 'GET'
+                });
+
                 const audioResult = await audioResponse.json();
+
+                if (audioResult.result) {
+                    console.log("URL finale de l'audio :", audioResult.url);
+                    setMessage("L'audio a été assemblé et uploadé avec succès.");
+                } else {
+                    setMessage("Erreur lors de l'upload de l'audio.");
+                }
 
 
 

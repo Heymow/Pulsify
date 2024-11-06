@@ -240,6 +240,17 @@ router.post("/:projectId/upload-audio", async (req, res) => {
     streamifier.createReadStream(chunk).pipe(uploadStream);
 });
 
+router.get("/:projectId/audio-url", async (req, res) => {
+    const projectId = req.params.projectId;
+    const project = await Project.findById(projectId);
+
+    if (!project || !project.audio) {
+        return res.status(404).json({ result: false, message: "Audio not found" });
+    }
+
+    res.json({ result: true, url: project.audio });
+});
+
 
 // router.post("/:projectId/upload-audio", upload.single('audio'), async (req, res) => {
 
