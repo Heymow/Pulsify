@@ -34,4 +34,11 @@ app.use('/projects', projectsRouter);
 app.use('/keywords', keywordsRouter);
 app.use('/genres', genresRouter);
 
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', 'https://pulsify-pink.vercel.app');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    next();
+});
+
 module.exports = app;
