@@ -211,7 +211,8 @@ router.post("/:projectId/upload-audio", async (req, res) => {
     // Transférer le morceau directement à Cloudinary
     const uploadOptions = {
         resource_type: 'video',     // Audio traité comme "video" par Cloudinary
-        folder: 'audios',           // Dossier dans Cloudinary
+        folder: 'audios',// Dossier dans Cloudinary
+        upload_preset: 'ml_default',
         public_id: uploadId,        // Un ID unique pour reconstituer le fichier complet
         chunk_size: 4000000,        // Taille des morceaux (par exemple, 4 Mo)
     };
