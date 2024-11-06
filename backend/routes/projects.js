@@ -197,7 +197,14 @@ router.post("/add", async (req, res) => {
 
 
 router.post("/:projectId/upload-audio", async (req, res) => {
-    console.log("1")
+    // Ajout des headers CORS spécifiques pour cette route
+    // res.header('Access-Control-Allow-Origin', 'https://pulsify-pink.vercel.app');
+    // res.header('Access-Control-Allow-Headers', 'Content-Type');
+
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
     const { uploadId, chunkIndex, totalChunks } = req.body;
     const projectId = req.params.projectId;
     const chunk = req.file.buffer;
@@ -216,7 +223,7 @@ router.post("/:projectId/upload-audio", async (req, res) => {
         public_id: uploadId,        // Un ID unique pour reconstituer le fichier complet
         chunk_size: 4000000,        // Taille des morceaux (par exemple, 4 Mo)
     };
-    console.log("2")
+
     const uploadStream = cloudinary.uploader.upload_stream(uploadOptions, async (error, result) => {
         if (error) {
             return res.status(500).json({ message: 'Upload failed', error });
@@ -227,7 +234,6 @@ router.post("/:projectId/upload-audio", async (req, res) => {
             await project.save();
             res.json({ result: true, message: 'Audio uploaded successfully', url: result.secure_url });
         }
-        console.log("3")
         return res.json({ result: true, message: `Chunk ${chunkIndex} received` });
     });
 
