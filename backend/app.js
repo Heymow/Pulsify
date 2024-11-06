@@ -22,8 +22,9 @@ const cors = require('cors');
 app.use(cors({ origin: 'https://pulsify-pink.vercel.app' }));
 
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// Augmenter la limite à 50 Mo
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 

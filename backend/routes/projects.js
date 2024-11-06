@@ -11,7 +11,10 @@ const cloudinary = require('../cloudinary');
 // Middelware pour décoder les données de l'audio venant du frontend
 const multer = require('multer');
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 50 * 1024 * 1024 } // Limite de 50 Mo
+});
 
 // Route pour ajouter un projet en BDD
 router.post("/add", async (req, res) => {
