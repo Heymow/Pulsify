@@ -156,7 +156,7 @@ router.post("/add", async (req, res) => {
 
 
 // router.post("/:projectId/upload-audio", upload.single('audio'), async (req, res) => {
-//     const { chunkIndex, totalChunks } = req.body;
+//     const { uploadId, chunkIndex, totalChunks } = req.body;
 //     const projectId = req.params.projectId;
 //     const chunk = req.file.buffer;
 
@@ -169,7 +169,9 @@ router.post("/add", async (req, res) => {
 //     // Options pour l'upload, sans `public_id` et `chunk_size`
 //     const uploadOptions = {
 //         resource_type: 'video',  // Audio traité comme "video" par Cloudinary
-//         folder: 'audios',        // Dossier dans Cloudinary
+//         folder: 'audios',
+//            public_id: uploadId,        // Un ID unique pour reconstituer le fichier complet
+
 //     };
 
 //     // Stream d'upload vers Cloudinary
@@ -194,70 +196,70 @@ router.post("/add", async (req, res) => {
 
 
 
-// router.post("/:projectId/upload-audio", async (req, res) => {
+router.post("/:projectId/upload-audio", async (req, res) => {
 
-//     const { uploadId, chunkIndex, totalChunks } = req.body;
-//     const projectId = req.params.projectId;
-//     const chunk = req.file.buffer;
-
-//     // Stocker temporairement le morceau si nécessaire
-//     const project = await Project.findById(projectId);
-//     if (!project) {
-//         return res.status(404).json({ result: false, message: "Project not found" });
-//     }
-
-//     // Transférer le morceau directement à Cloudinary
-//     const uploadOptions = {
-//         resource_type: 'video',     // Audio traité comme "video" par Cloudinary
-//         folder: 'audios',           // Dossier dans Cloudinary
-//         public_id: uploadId,        // Un ID unique pour reconstituer le fichier complet
-//         chunk_size: 4000000,        // Taille des morceaux (par exemple, 4 Mo)
-//     };
-
-//     const uploadStream = cloudinary.uploader.upload_stream(uploadOptions, async (error, result) => {
-//         if (error) {
-//             return res.status(500).json({ message: 'Upload failed', error });
-//         }
-
-//         if (parseInt(chunkIndex) + 1 === parseInt(totalChunks)) {
-//             project.audio = result.secure_url;
-//             await project.save();
-//             res.json({ result: true, message: 'Audio uploaded successfully', url: result.secure_url });
-//         } else {
-//             res.json({ result: true, message: `Chunk ${chunkIndex} received` });
-//         }
-//     });
-
-//     streamifier.createReadStream(chunk).pipe(uploadStream);
-// });
-
-
-router.post("/:projectId/upload-audio", upload.single('audio'), async (req, res) => {
-
+    const { uploadId, chunkIndex, totalChunks } = req.body;
     const projectId = req.params.projectId;
-    // Recherche dans la Bdd le projet pour lequel il faut rajouter l'audio
+    const chunk = req.file.buffer;
+
+    // Stocker temporairement le morceau si nécessaire
     const project = await Project.findById(projectId);
     if (!project) {
         return res.status(404).json({ result: false, message: "Project not found" });
     }
-    // Ouverture du flux de données pour envoyer l'audio a Cloudinary
-    cloudinary.uploader.upload_stream(
-        { resource_type: 'video', folder: 'audios' },
-        async (error, result) => {
-            if (error) {
-                return res.status(500).json({ message: 'Upload failed', error });
-            }
 
-            // Mise à jour du projet pour ajouter l'audio
+    // Transférer le morceau directement à Cloudinary
+    const uploadOptions = {
+        resource_type: 'video',     // Audio traité comme "video" par Cloudinary
+        folder: 'audios',           // Dossier dans Cloudinary
+        public_id: uploadId,        // Un ID unique pour reconstituer le fichier complet
+        chunk_size: 4000000,        // Taille des morceaux (par exemple, 4 Mo)
+    };
+
+    const uploadStream = cloudinary.uploader.upload_stream(uploadOptions, async (error, result) => {
+        if (error) {
+            return res.status(500).json({ message: 'Upload failed', error });
+        }
+
+        if (parseInt(chunkIndex) + 1 === parseInt(totalChunks)) {
             project.audio = result.secure_url;
             await project.save();
-
             res.json({ result: true, message: 'Audio uploaded successfully', url: result.secure_url });
+        } else {
+            res.json({ result: true, message: `Chunk ${chunkIndex} received` });
         }
-        // Fermeture du flux de données 
-    ).end(req.file.buffer);
+    });
 
+    streamifier.createReadStream(chunk).pipe(uploadStream);
 });
+
+
+// router.post("/:projectId/upload-audio", upload.single('audio'), async (req, res) => {
+
+//     const projectId = req.params.projectId;
+//     // Recherche dans la Bdd le projet pour lequel il faut rajouter l'audio
+//     const project = await Project.findById(projectId);
+//     if (!project) {
+//         return res.status(404).json({ result: false, message: "Project not found" });
+//     }
+//     // Ouverture du flux de données pour envoyer l'audio a Cloudinary
+//     cloudinary.uploader.upload_stream(
+//         { resource_type: 'video', folder: 'audios' },
+//         async (error, result) => {
+//             if (error) {
+//                 return res.status(500).json({ message: 'Upload failed', error });
+//             }
+
+//             // Mise à jour du projet pour ajouter l'audio
+//             project.audio = result.secure_url;
+//             await project.save();
+
+//             res.json({ result: true, message: 'Audio uploaded successfully', url: result.secure_url });
+//         }
+//         // Fermeture du flux de données 
+//     ).end(req.file.buffer);
+
+// });
 
 
 // Recherche par titre
