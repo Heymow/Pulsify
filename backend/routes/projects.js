@@ -7,7 +7,7 @@ const User = require('../models/users')
 const Keyword = require("../models/keywords")
 const Signalement = require("../models/signalements")
 const cloudinary = require('../cloudinary');
-const streamifier = require('streamifier');
+const puppeteer = require('puppeteer');
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -277,6 +277,36 @@ router.post("/:projectId/upload-audio", upload.single('audio'), async (req, res)
     ).end(req.file.buffer);
 
 });
+
+router.get("/:projectId/:URLSuno/suno-URL", async (req, res) => {
+
+    const projectId = req.params.projectId;
+    const URLSuno = req.params.URLSuno;
+    try {
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        await page.goto(URLSuno); // L'URL de la page cible
+
+        // Localisez l'URL de l'audio
+        const audioSrc = await page.evaluate(() => {
+            const audioElement = document.querySelector(`#active-audio-play`);
+            return audioElement ? audioElement.src : null;
+        });
+
+        await browser.close();
+
+        if (audioSrc) {
+            res.json({ audioUrl: audioSrc });
+        } else {
+            res.status(404).json({ error: 'Audio not found' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
 
 
 // Recherche par titre
